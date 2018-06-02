@@ -1,0 +1,35 @@
+
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser');
+const keys = require('./keys');
+const axios = require('axios');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+app.post('/new-message', function(req, res) {
+    const { message } = req.body;
+    if (!message || message.text.toLowerCase().indexOf('marco') < 0) {
+        return res.end();
+    }
+
+    axios.post(`https://api.telegram.org/bot${keys.telegram.key}/sendMessage`, {
+        chat_id: message.chat.id,
+        text: 'Polo!!'
+    })
+      .then(response => {
+        console.log('Message posted');
+        res.end('ok');
+      })
+      .catch(err => {
+        console.log('Error: ', err);
+        res.end('Error: ', err);
+      });
+});
+
+// Finally, start our server
+app.listen(3000, function () {
+    console.log('Telegram app listening on port 3000!');
+});
